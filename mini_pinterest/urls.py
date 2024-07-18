@@ -23,6 +23,7 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
+    path('boards/', include('boards.urls')),
 
 ]
 check_groups_available()  # this line will create the groups on startup of the app
