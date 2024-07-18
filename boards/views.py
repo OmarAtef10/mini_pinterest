@@ -31,4 +31,7 @@ class ListCreateBoardView(ListCreateAPIView):
         serializer.save(owner=self.request.user)
 
     def get_queryset(self):
+        if self.request.user.is_superuser:
+            return self.queryset  # return all boards for superuser to manage
+
         return self.queryset.filter(owner=self.request.user)
