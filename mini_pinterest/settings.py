@@ -76,7 +76,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mini_pinterest.wsgi.application'
 ASGI_APPLICATION = 'mini_pinterest.asgi.application'
-
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',

@@ -29,6 +29,7 @@ urlpatterns = [
     path('pins/', include('pins.urls')),
     path('chat/', include('chat.urls')),
 
+
 ]
 
 urlpatterns += static(settings.MEDIA_URL,
