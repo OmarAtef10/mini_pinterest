@@ -113,3 +113,118 @@ class GetPinById(GenericAPIView, ViewPin):
         if data:
             return Response(data, status=200)
         return Response({"Error": "Pin not found"}, status=404)
+
+
+class UpdatePin(GenericAPIView):
+    queryset = Pin.objects.all()
+    serializer_class = PinSerializer
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk):
+        try:
+            pin = Pin.objects.get(id=pk)
+        except Pin.DoesNotExist:
+            return Response({"Error": "Pin not found!"}, status=404)
+
+        if pin.board.is_private and not request.user.is_superuser:
+            if pin.board.owner != request.user:
+                return Response({"Error": "Bummer you dont have access to this pin"})
+
+        pin.delete()
+        return Response({"Message": "Pin deleted successfully"}, status=200)
+
+    def put(self, request, pk):
+        try:
+            pin = Pin.objects.get(id=pk)
+        except Pin.DoesNotExist:
+            return Response({"Error": "Pin not found!"}, status=404)
+
+        if pin.board.is_private and not request.user.is_superuser:
+            if pin.board.owner != request.user:
+                return Response({"Error": "Bummer you dont have access to this pin"})
+
+        data = request.data
+        board_id = data.get('board_id', None)
+        title = data.get('title', None)
+        description = data.get('description', None)
+
+        if board_id:
+            try:
+                board = Board.objects.get(id=data['board_id'])
+            except Board.DoesNotExist:
+                return Response({"Error": "Board not found"}, status=404)
+
+            if board.owner != request.user and not request.is_superuser:
+                return Response({"Error": "You are not the owner of this board"}, status=403)
+            pin.board = board
+
+        if title:
+            pin.title = title
+
+        if description:
+            pin.description = description
+
+        pin.save()
+        serializer = PinSerializer(pin)
+
+        return Response({"Message": "Pin updated successfully", "Pin": serializer.data}, status=200)
+
+
+class UpdatePinImage(GenericAPIView):
+    serializer_class = PinSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = Pin.objects.all()
+
+    def delete(self, request, pin_id, image_id):
+        try:
+            pin = Pin.objects.get(id=pin_id)
+        except Pin.DoesNotExist:
+            return Response({"Error": "Pin not found"}, status=404)
+
+        if pin.board.is_private and not request.user.is_superuser:
+            if pin.board.owner != request.user:
+                return Response({"Error": "Bummer you dont have access to this pin"})
+
+        try:
+            image = PinImage.objects.get(id=image_id)
+        except PinImage.DoesNotExist:
+            return Response({"Error": "Image not found"}, status=404)
+
+        image.delete()
+        return Response({"Message": "Image deleted successfully"}, status=200)
+
+    def put(self, request, pin_id, image_id):
+        try:
+            pin = Pin.objects.get(id=pin_id)
+        except Pin.DoesNotExist:
+            return Response({"Error": "Pin not found"}, status=404)
+
+        if pin.board.is_private and not request.user.is_superuser:
+            if pin.board.owner != request.user:
+                return Response({"Error": "Bummer you dont have access to this pin"})
+
+        try:
+            image = PinImage.objects.get(id=image_id)
+        except PinImage.DoesNotExist:
+            return Response({"Error": "Image not found"}, status=404)
+
+        image.image = request.FILES['image']
+        image.save()
+        return Response({"Message": "Image updated successfully"}, status=200)
+
+    def post(self, request, pin_id):
+        try:
+            pin = Pin.objects.get(id=pin_id)
+        except Pin.DoesNotExist:
+            return Response({"Error": "Pin not found"}, status=404)
+
+        if pin.board.is_private and not request.user.is_superuser:
+            if pin.board.owner != request.user:
+                return Response({"Error": "Bummer you dont have access to this pin"})
+
+        images = request.FILES.getlist('images')
+
+        for image in images:
+            PinImage.objects.create(pin=pin, image=image)
+
+        return Response({"Message": "Image added successfully"}, status=201)
