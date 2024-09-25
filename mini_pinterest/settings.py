@@ -30,6 +30,11 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'allauth',
+    'allauth.account',
+    # Optional -- requires install using `django-allauth[socialaccount]`.
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.github',
     'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -53,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = 'mini_pinterest.urls'
@@ -73,6 +79,15 @@ TEMPLATES = [
         },
     },
 ]
+
+
+SOCIALACCOUNT_PROVIDERS = {
+    "github": {
+        "VERIFIED_EMAIL": True
+        
+    }
+}
+
 
 WSGI_APPLICATION = 'mini_pinterest.wsgi.application'
 ASGI_APPLICATION = 'mini_pinterest.asgi.application'
@@ -99,6 +114,17 @@ REST_FRAMEWORK = {
     ],
 
 }
+
+
+AUTHENTICATION_BACKENDS = [
+    
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by email
+    'allauth.account.auth_backends.AuthenticationBackend',
+
+]
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
