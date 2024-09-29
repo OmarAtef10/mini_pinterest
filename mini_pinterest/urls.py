@@ -28,7 +28,7 @@ urlpatterns = [
     path('boards/', include('boards.urls')),
     path('pins/', include('pins.urls')),
     path('chat/', include('chat.urls')),
-
+    path('accounts/', include('allauth.urls')),
 
 ]
 
