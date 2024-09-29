@@ -1,0 +1,30 @@
+version: '3'
+services:
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: mini_pinterest
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: 1010abab
+    ports:
+      - 5432:5432
+
+  web:
+    build: .
+    command: bash -c "
+     python manage.py makemigrations &&
+     python manage.py migrate &&
+     echo 'from django.contrib.auth.models import User; User.objects.filter(username=\"admin\").exists() or User.objects.create_superuser(\"admin\", \"admin@example.com\", \"adminpass\")' | python manage.py shell &&      
+     python manage.py runserver 0.0.0.0:8000
+     "
+    ports:
+      - 8000:8000
+
+    depends_on:
+      - db
+
+    environment:
+      - DB_HOST=db
+      - DB_PASSWORD=1010abab
+     
