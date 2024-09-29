@@ -35,4 +35,4 @@ urlpatterns = [
 urlpatterns += static(settings.MEDIA_URL,
                       document_root=settings.MEDIA_ROOT)  # this line is added to serve media files in development mode
 
-check_groups_available()  # this line will create the groups on startup of the app
+# check_groups_available()  # this line will create the groups on startup of the app

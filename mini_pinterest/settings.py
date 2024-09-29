@@ -138,7 +138,7 @@ DATABASES = {
         'NAME': 'mini_pinterest',
         'USER': 'test',
         'PASSWORD': env('DB_PASSWORD'),
-        'HOST': 'localhost',
+        'HOST': env('DB_HOST'),
         'PORT': '5432'
     }
 }
